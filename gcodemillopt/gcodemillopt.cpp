@@ -173,7 +173,7 @@ bool FileExists(const std::string &strFilename)
 	struct stat st = { };
 	if (stat(strFilename.c_str(), &st) == -1)
 	{
-		fprintf(stderr, "Error %i opening %hs\n", errno, strFilename.c_str());
+		fprintf(stderr, "Error %i opening %s\n", errno, strFilename.c_str());
 		return false;
 	}
 	return true;
@@ -195,7 +195,7 @@ void OptimizeAndOutputSets(std::deque<GCodeSet> &vSets, unsigned int &uiLinesOut
 	{
 		dDepth = vSets[0].GetZStart();
 	}
-	fprintf(stderr, "Sorting %u sets at depth %.02f\n", vSets.size(), dDepth);
+	fprintf(stderr, "Sorting %u sets at depth %.02f\n", (unsigned int)vSets.size(), dDepth);
 
 	//
 	// 
@@ -229,11 +229,11 @@ void OptimizeAndOutputSets(std::deque<GCodeSet> &vSets, unsigned int &uiLinesOut
 
 	for (auto entry : vOptimizedSet)
 	{
-		fprintf(stderr, "\tOutputing set with %u lines\n", entry.GetLines().size());
+		fprintf(stderr, "\tOutputing set with %u lines\n", (unsigned int)entry.GetLines().size());
 		for (auto line : entry.GetLines())
 		{
 			++uiLinesOut;
-			fprintf(pfOutput, line.c_str());
+			fprintf(pfOutput, "%s", line.c_str());
 		}
 	}
 }
@@ -277,7 +277,7 @@ int main(int argc, const char *ppArgv[])
 			spfOutput.reset(fopen(ppArgv[iArg + 1], "wt"), fclose);
 			if (nullptr == spfOutput)
 			{
-				fprintf(stderr, "Error %i opening %hs\n", errno, ppArgv[iArg + 1]);
+				fprintf(stderr, "Error %i opening %s\n", errno, ppArgv[iArg + 1]);
 				return 0;
 			}
 			++iArg;
@@ -302,21 +302,21 @@ int main(int argc, const char *ppArgv[])
 		}
 		else
 		{
-			fprintf(stderr, "Unknown command-line argument: %hs\n", strOption.c_str());
+			fprintf(stderr, "Unknown command-line argument: %s\n", strOption.c_str());
 			return 0;
 		}
 	}
 
 	if (pszInputFile == nullptr)
 	{
-		fprintf(stderr, "USAGE: %hs inputfile [-o outputfile][-laser|-l][-x|-y|-xy]\n", ppArgv[0]);
+		fprintf(stderr, "USAGE: %s inputfile [-o outputfile][-laser|-l][-x|-y|-xy]\n", ppArgv[0]);
 		return 0;
 	}
 
 	std::shared_ptr<FILE> spFile(fopen(ppArgv[1], "rt"), fclose);
 	if (spFile.get() == nullptr)
 	{
-		fprintf(stderr, "Error %i opening %hs\n", errno, ppArgv[1]);
+		fprintf(stderr, "Error %i opening %s\n", errno, ppArgv[1]);
 		return 1;
 	}
 
@@ -338,7 +338,7 @@ int main(int argc, const char *ppArgv[])
 
 	//
 	// Add an attribution
-	fprintf(spfOutput.get(), "(Optimized by %hs)\n(Written by Andrew L. Sandoval)\n", strAppName.c_str());
+	fprintf(spfOutput.get(), "(Optimized by %s)\n(Written by Andrew L. Sandoval)\n", strAppName.c_str());
 
 	// Read file and break into sections...
 	while (!feof(spFile.get()))
@@ -377,7 +377,7 @@ int main(int argc, const char *ppArgv[])
 			}
 			else
 			{
-				fprintf(spfOutput.get(), strLine.c_str());
+				fprintf(spfOutput.get(), "%s", strLine.c_str());
 			}
 			++uiLinesOut;
 			continue;	// Stay in prologue until a G0/G1
@@ -407,7 +407,7 @@ int main(int argc, const char *ppArgv[])
 
 		if (bInEpilogue)
 		{
-			fprintf(spfOutput.get(), strLine.c_str());
+			fprintf(spfOutput.get(), "%s", strLine.c_str());
 			++uiLinesOut;
 			continue;
 		}
@@ -452,7 +452,7 @@ int main(int argc, const char *ppArgv[])
 				}
 				if (bInPrologue)		// Only place this should happen...
 				{
-					fprintf(spfOutput.get(), strLine.c_str());
+					fprintf(spfOutput.get(), "%s", strLine.c_str());
 				}
 			}
 		}
@@ -492,7 +492,7 @@ int main(int argc, const char *ppArgv[])
 			if (szX == strLine.npos ||
 				szY == strLine.npos)
 			{
-				fprintf(stderr, "Critical Error: expected a G0 line to contain X and Y axis settings on line #%u: %hs\n", uiLine, strLine.c_str());
+				fprintf(stderr, "Critical Error: expected a G0 line to contain X and Y axis settings on line #%u: %s\n", uiLine, strLine.c_str());
 				return 0;
 			}
 
@@ -523,8 +523,8 @@ int main(int argc, const char *ppArgv[])
 		gcCurrent.LineVector().push_back(strLine);
 	}
 
-	fprintf(stderr, "Output Lines: %lu\n", uiLinesOut);
-	fprintf(stderr, "Input Lines: %lu\n", uiLine);
+	fprintf(stderr, "Output Lines: %u\n", uiLinesOut);
+	fprintf(stderr, "Input Lines: %u\n", uiLine);
 	return 0;
 }
 
