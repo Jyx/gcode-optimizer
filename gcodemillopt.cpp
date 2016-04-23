@@ -18,6 +18,7 @@
 // 
 // 
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
@@ -28,6 +29,8 @@
 #include <memory>
 #include <utility>
 #include <sys/stat.h>
+#include <cmath>
+#include <errno.h>
 
 class GCodeSet
 {
@@ -215,7 +218,7 @@ void OptimizeAndOutputSets(std::deque<GCodeSet> &vSets, unsigned int &uiLinesOut
 		{
 			double dXDelta = entry.GetXStart() - dXLast;
 			double dYDelta = entry.GetYStart() - dYLast;
-			vDistance.push_back(std::make_pair(index, abs(dXDelta) + abs(dYDelta)));
+			vDistance.push_back(std::make_pair(index, std::abs(dXDelta) + std::abs(dYDelta)));
 			++index;
 		}
 		std::sort(vDistance.begin(), vDistance.end(), SortLessPair);
